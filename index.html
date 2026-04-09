@@ -28,9 +28,22 @@
   <meta name="description" content="Sigue todos los trenes AVE, Alvia, OUIGO e Iryo sobre el mapa oficial de la red española. Incidencias, retrasos y estaciones en tiempo real." />
   <title>Trenes — Red ferroviaria en tiempo real</title>
 
-  <!-- ─── Redirect to App Store ─── -->
+  <!-- ─── Smart redirect by platform ─── -->
   <script>
-    window.location.replace("https://apps.apple.com/app/id6760770294");
+    (function() {
+      var ua = navigator.userAgent || navigator.vendor || window.opera;
+      var iOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+      var android = /android/i.test(ua);
+      var appStore = "https://apps.apple.com/app/id6760770294";
+      var betaAndroid = "https://danfg95.github.io/trenes/beta/";
+
+      if (iOS) {
+        window.location.replace(appStore);
+      } else if (android) {
+        window.location.replace(betaAndroid);
+      }
+      // Desktop: no redirect, show landing page
+    })();
   </script>
   <noscript>
     <meta http-equiv="refresh" content="0; url=https://apps.apple.com/app/id6760770294" />
@@ -90,18 +103,15 @@
       width: 96px;
       height: 96px;
       border-radius: 22px;
-      background: linear-gradient(145deg, var(--brand-light), var(--brand));
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      overflow: hidden;
       margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(91,79,160,0.45);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
     }
 
-    .app-icon svg {
-      width: 52px;
-      height: 52px;
-      fill: white;
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     h1 {
@@ -170,32 +180,65 @@
       color: var(--muted);
     }
 
-    .download-btn {
+    .download-buttons {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .badge-link {
+      display: block;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .badge-link:hover  { opacity: 0.92; transform: translateY(-1px); }
+    .badge-link:active { opacity: 0.80; transform: translateY(0); }
+
+    .badge-link img,
+    .badge-link svg {
+      height: 48px;
+      width: auto;
+    }
+
+    .beta-btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       width: 100%;
-      padding: 16px 24px;
-      background: var(--text);
-      color: var(--bg);
-      border-radius: 16px;
+      padding: 14px 24px;
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
       text-decoration: none;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
       letter-spacing: -0.2px;
-      transition: opacity 0.15s, transform 0.15s;
-      box-shadow: 0 4px 20px rgba(240,238,255,0.15);
+      transition: opacity 0.15s, transform 0.15s, border-color 0.15s;
     }
 
-    .download-btn:hover  { opacity: 0.92; transform: translateY(-1px); }
-    .download-btn:active { opacity: 0.80; transform: translateY(0); }
+    .beta-btn:hover  { opacity: 0.92; transform: translateY(-1px); border-color: rgba(255,255,255,0.25); }
+    .beta-btn:active { opacity: 0.80; transform: translateY(0); }
 
-    .download-btn svg {
-      width: 20px;
-      height: 20px;
-      fill: var(--bg);
+    .beta-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
       flex-shrink: 0;
+    }
+
+    .beta-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(76,175,80,0.25);
+      color: #81c784;
+      padding: 2px 7px;
+      border-radius: 6px;
     }
 
     .operators {
@@ -244,17 +287,7 @@
   <div class="card">
     <!-- App icon -->
     <div class="app-icon">
-      <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-        <!-- Train icon simplified -->
-        <rect x="15" y="10" width="30" height="28" rx="8" fill="white" opacity="0.9"/>
-        <rect x="20" y="15" width="8"  height="8"  rx="2" fill="#3b2f6e"/>
-        <rect x="32" y="15" width="8"  height="8"  rx="2" fill="#3b2f6e"/>
-        <rect x="20" y="27" width="20" height="3"  rx="1.5" fill="#3b2f6e" opacity="0.5"/>
-        <circle cx="21" cy="43" r="5" fill="white" opacity="0.85"/>
-        <circle cx="39" cy="43" r="5" fill="white" opacity="0.85"/>
-        <rect x="29" y="38" width="2" height="8" rx="1" fill="white" opacity="0.6"/>
-        <rect x="11" y="40" width="38" height="2.5" rx="1.25" fill="white" opacity="0.4"/>
-      </svg>
+      <img src="icon.png" alt="Trenes App" width="96" height="96" />
     </div>
 
     <h1>Trenes</h1>
@@ -284,12 +317,21 @@
       </div>
     </div>
 
-    <a class="download-btn" href="https://apps.apple.com/app/id6760770294">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-      </svg>
-      Descargar en el App Store
-    </a>
+    <div class="download-buttons">
+      <!-- Badge oficial App Store -->
+      <a class="badge-link" href="https://apps.apple.com/app/id6760770294">
+        <img src="Download-on-the-App-Store/ES/Download_on_App_Store/Black_lockup/SVG/Download_on_the_App_Store_Badge_ES_RGB_blk_100217.svg"
+             alt="Descargar en el App Store" height="48" />
+      </a>
+      <!-- Android beta -->
+      <a class="beta-btn" href="https://danfg95.github.io/trenes/beta/">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.6 11.48V9a5.6 5.6 0 0 0-11.2 0v2.48A5.6 5.6 0 0 0 4 16a5.6 5.6 0 0 0 3.6 5.2h8.8A5.6 5.6 0 0 0 20 16a5.6 5.6 0 0 0-2.4-4.52zM9.2 9a2.8 2.8 0 0 1 5.6 0v2H9.2V9zm1.2 10.4a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zm3.2 0a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4zM8 2l1.5 1.5M16 2l-1.5 1.5"/>
+        </svg>
+        Obtener para Android
+        <span class="beta-tag">Beta</span>
+      </a>
+    </div>
 
     <div class="operators">
       <span class="op-badge op-renfe">RENFE</span>
@@ -297,7 +339,7 @@
       <span class="op-badge op-iryo">IRYO</span>
     </div>
 
-    <p class="redirect-note">Si no se redirige automáticamente, pulsa el botón de arriba.</p>
+    <p class="redirect-note">En móvil se redirige automáticamente a tu tienda. Si no, pulsa el botón correspondiente.</p>
   </div>
 
   <div class="legal">
